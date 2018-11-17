@@ -1,0 +1,635 @@
+
+DATA ASSEMBLY
+=============
+
+# work directory /nfs/data1/oliveros/trogonidae
+
+python ~/phyluce/bin/assembly/phyluce_assembly_match_contigs_to_probes \
+    --contigs contigs_trogonidae \
+    --probes uce-5k-probes.fasta \
+    --output lastz_trogonidae \
+    --log-path logs
+
+cat logs/phyluce_assembly_match_contigs_to_probes.log |grep 'dupe probe matches' | sed -r 's/.+ - INFO - //' | sed -r 's/: /\t/' | sed -r 's/ \(/\t/' |sed -r 's/\) uniques of /\t/' |sed -r 's/ contigs, /\t/' |sed -r 's/ dupe probe matches, /\t/' | sed -r 's/ UCE loci removed for matching multiple contigs, /\t/' |sed -r 's/ contigs removed for matching multiple UCE loci//'
+
+apalharpactes_mackloti_b49104	4192	57.35%	7310	0	117	48
+apaloderma_aequatoriale_8461	4082	56.52%	7222	0	122	42
+apaloderma_vittatum	4680	97.95%	4778	0	67	85
+berenicornis_comatus_dot14737	4342	39.61%	10962	0	98	25
+ceyx_argentata_19269	4278	47.36%	9033	0	135	67
+colius_striatus	4712	97.96%	4810	0	72	87
+colius_striatus_tg2	4776	98.03%	4872	0	70	85
+euptilotis_neoxenus_prs2606	4078	46.38%	8793	0	231	47
+harpactes_ardens_14176	4278	49.65%	8616	0	122	34
+harpactes_ardens_18227	4051	58.20%	6960	0	119	44
+harpactes_ardens_1955	4194	47.80%	8774	0	131	38
+harpactes_ardens_20256	4268	44.44%	9603	0	145	50
+harpactes_ardens_20922	4267	45.09%	9463	0	130	61
+harpactes_ardens_25560	4272	55.43%	7707	0	99	52
+harpactes_ardens_25599	4211	53.82%	7824	0	122	45
+harpactes_ardens_26958	4288	48.40%	8860	0	127	48
+harpactes_ardens_26995	4197	52.49%	7996	0	114	33
+harpactes_ardens_28435	4226	39.23%	10773	0	135	41
+harpactes_erythrocephalus_9970	3882	53.22%	7294	0	211	34
+harpactes_oreskios_23185	3695	52.55%	7031	0	272	43
+leptosomus_discolor_449184	4306	46.20%	9321	0	98	54
+otus_elegans_10975	4225	45.27%	9332	0	145	54
+pharomachrus_antisianus_b22870	4201	57.30%	7331	0	137	71
+priotelus_roseigaster_6363	4105	55.76%	7362	0	89	25
+priotelus_temnurus_5565	4264	52.23%	8164	0	145	86
+trogon_personatus_gfb2125	3935	49.57%	7938	0	169	56
+trogon_violaceus_rop258	3195	35.13%	9095	0	456	31
+upupa_epops_26612	3865	63.35%	6101	0	147	50
+
+
+python ~/phyluce/bin/assembly/phyluce_assembly_get_match_counts \
+    --locus-db lastz_trogonidae/probe.matches.sqlite \
+    --taxon-list-config datasets.conf \
+    --taxon-group 'trog' \
+    --output trog.inc.conf \
+    --incomplete-matrix \
+    --log-path logs
+    
+python ~/phyluce/bin/assembly/phyluce_assembly_get_fastas_from_match_counts \
+    --contigs contigs_trogonidae \
+    --locus-db lastz_trogonidae/probe.matches.sqlite \
+    --match-count-output trog.inc.conf \
+    --incomplete-matrix trog.inc.incomplete \
+    --output trog.inc.fasta \
+    --log-path logs
+
+# get average contig lengths spades
+
+python ~/phyluce/bin/assembly/phyluce_assembly_explode_get_fastas_file \
+    --input trog.inc.fasta \
+    --output-dir trog_exploded_fasta \
+    --by-taxon
+
+for i in *.fasta; do python ~/phyluce/bin/assembly/phyluce_assembly_get_fasta_lengths --input $i --csv; done
+
+apalharpactes-mackloti-b49104.unaligned.fasta,4192,4126270,984.320133588,4.86875805818,201,2125,1053.5,2385
+apaloderma-aequatoriale-8461.unaligned.fasta,4082,3330916,816.000979912,4.37323061078,201,1819,864.0,1241
+apaloderma-vittatum.unaligned.fasta,4680,9706244,2073.98376068,2.63447509794,275,2751,2120.0,4669
+berenicornis-comatus-dot14737.unaligned.fasta,4342,2905457,669.151773376,3.04503969533,201,4950,695.0,80
+ceyx-argentata-19269.unaligned.fasta,4278,4197405,981.16058906,4.8618925729,201,2199,1050.0,2381
+colius-striatus.unaligned.fasta,4712,9736953,2066.41617148,2.88196658817,204,2752,2120.0,4692
+euptilotis-neoxenus-prs2606.unaligned.fasta,4078,3698889,907.035066209,4.7531669527,201,2067,957.0,1830
+harpactes-ardens-26958.unaligned.fasta,4288,3936954,918.132929104,4.43306351664,203,1900,983.0,2041
+harpactes-erythrocephalus-9970.unaligned.fasta,3882,3166119,815.589644513,4.72725885545,201,1892,857.0,1249
+harpactes-oreskios-23185.unaligned.fasta,3695,3048189,824.949661705,5.0890917378,201,1890,874.0,1297
+leptosomus-discolor-449184.unaligned.fasta,4306,4180411,970.833952624,4.88962318312,202,1829,1043.0,2344
+otus-elegans-10975.unaligned.fasta,4225,4153909,983.173727811,4.83856913815,201,2026,1057.0,2393
+pharomachrus-antisianus-b22870.unaligned.fasta,4201,4398181,1046.93668174,5.14968239998,201,2199,1124.0,2666
+priotelus-roseigaster-6363.unaligned.fasta,4105,2907822,708.361023143,3.65235158712,201,1799,733.0,362
+priotelus-temnurus-5565.unaligned.fasta,4264,4400866,1032.09803002,5.02933258751,201,2172,1114.0,2639
+trogon-personatus-gfb2125.unaligned.fasta,3935,3679280,935.013977128,5.28822491556,202,2489,1003.0,1980
+trogon-violaceus-rop258.unaligned.fasta,3195,2459505,769.798122066,6.03954816696,201,2097,766.0,932
+upupa-epops-26612.unaligned.fasta,3865,3533253,914.166364812,4.76879478672,201,2071,978.0,1804
+
+
+# sequence alignment
+
+python ~/phyluce/bin/align/phyluce_align_seqcap_align \
+    --fasta trog.inc.fasta \
+    --output trog_inc_aligned/ \
+    --output-format fasta \
+    --taxa 18 \
+    --aligner mafft \
+    --no-trim \
+    --cores 12 \
+    --incomplete-matrix \
+    --log-path logs
+
+python ~/phyluce/bin/align/phyluce_align_get_gblocks_trimmed_alignments_from_untrimmed \
+    --alignments trog_inc_aligned/ \
+    --output trog_inc_gbtrimmed/ \
+    --cores 12 \
+    --b2 0.75 \
+    --log-path logs
+
+python ~/phyluce/bin/align/phyluce_align_remove_locus_name_from_nexus_lines \
+    --alignments trog_inc_gbtrimmed/ \
+    --output trog_inc_renamed/ \
+    --cores 12 \
+    --log-path logs
+
+# 90% matrix: 3581 loci
+
+python ~/phyluce/bin/align/phyluce_align_filter_alignments \
+    --alignments trog_inc_renamed/ \
+    --output trog90 \
+    --input-format nexus \
+    --min-taxa 16 \
+    --cores 12 \
+    --log-path logs
+
+python ~/phyluce/bin/align/phyluce_align_get_align_summary_data \
+    --alignments trog90 \
+    --cores 12 \
+    --log-path logs
+
+python ~/phyluce/bin/align/phyluce_align_format_nexus_files_for_raxml \
+	--alignments trog90/ \
+	--output trog90_raxml \
+	--charsets \
+	--log-path logs
+
+# convert concatenated data to nexus for svdquartets
+	
+python ~/phyluce/bin/align/phyluce_align_convert_one_align_to_another \
+    --alignments trog90_raxml \
+    --output trog90_svdq \
+    --input-format phylip-relaxed \
+    --output-format nexus \
+    --cores 12 \
+    --log-path logs
+
+
+# svdquartets
+
+cd trog90_svdq
+
+# execute paup Version 4.0a (build 157) for Unix/Linux (built on Aug 10 2017 at 12:35:49)
+ 
+# svdq
+execute trog90.nexus
+outgroup otus_elegans_10975
+svdquartets evalquartets=all bootstrap=standard nreps=100 nthreads=12
+savetree file=trog90.svdq.con.tre supportValues=nodeLabels
+
+
+# for gene tree based methods
+# convert individual alignments to phylip
+
+python ~/phyluce/bin/align/phyluce_align_convert_one_align_to_another \
+    --alignments trog90 \
+    --output trog90_phylip \
+    --input-format nexus \
+    --output-format phylip-relaxed \
+    --cores 12 \
+    --log-path logs
+    
+python ~/phyluce/bin/genetrees/phyluce_genetrees_generate_multilocus_bootstrap_count \
+    --alignments trog90_phylip \
+    --bootstrap_replicates trog90.bootstrap.replicates \
+    --bootstrap_counts trog90.bootstrap.counts \
+    --directory /scratch/oliveros/trogonidae/trog90_phylip \
+    --bootreps 100 \
+    --log-path logs     
+
+# generate gene trees for bootstraps
+
+# PBS script:
+
+#PBS -A hpc_allbirds01
+#PBS -l nodes=1:ppn=16
+#PBS -l walltime=5:00:00
+#PBS -q workq
+#PBS -N trog_raxml_boot
+
+cd $PBS_O_WORKDIR
+export JOBS_PER_NODE=16
+
+parallel --progress \
+         --joblog logfile.$PBS_JOBID \
+         -j $JOBS_PER_NODE \
+         --slf $PBS_NODEFILE \
+         --workdir $PBS_O_WORKDIR \
+         --colsep ' ' \
+         ~/jobscripts/par_raxml_boot.sh :::: trog90.bootstrap.counts1
+
+# contents of par_raxml_boot.sh
+
+#!/bin/bash
+
+FILE=$1
+NUMBOOTREPS=$2
+DIR=`dirname ${FILE}`
+BASE=`basename ${FILE}`
+LOCUS="${BASE%.*}"
+
+# get a random number for seed value
+RANDOM1=`python -c "import random; print random.randrange(0,1000000)"`
+RANDOM2=`python -c "import random; print random.randrange(0,1000000)"`
+
+# create a directory for the output
+BOOTREPS=bootreps/${LOCUS}
+mkdir -p $BOOTREPS
+
+# change that directory
+cd $BOOTREPS
+
+# run raxml against $FILE
+raxmlHPC-AVX -m GTRGAMMA -N $NUMBOOTREPS -p $RANDOM1 -b $RANDOM2 -n bootrep -k -s $FILE
+
+
+# check parallel log file for unfinished tasks and make new task list
+
+awk '$7 > "0" { print $10 }' logfile.787586.mike3 > files
+
+grep -f files trog90.bootstrap.counts > trog90.bootstrap.counts1
+
+# delete folders and files from unfinished tasks
+
+awk '$7 > "0" { print $10 }' logfile.787586.mike3 | sed 's/trog90_phylip/bootreps/' | sed 's/.phylip-relaxed//' > delete
+
+xargs rm -r < delete
+
+# sort bootstrap replicates
+#PBS -A hpc_carl03
+#PBS -l nodes=1:ppn=1
+#PBS -l walltime=00:40:00
+#PBS -q single
+#PBS -N sort
+
+cd /scratch/oliveros/trogonidae
+python ~/phyluce/bin/genetrees/phyluce_genetrees_sort_multilocus_bootstraps \
+    --input /scratch/oliveros/trogonidae/bootreps \
+    --bootstrap_replicates /scratch/oliveros/trogonidae/trog90.bootstrap.replicates \
+    --output /scratch/oliveros/trogonidae/trog90_speciestree/
+    
+
+# astrid job script
+
+#PBS -A hpc_allbirds01
+#PBS -l nodes=7:ppn=16
+#PBS -l walltime=5:00:00
+#PBS -q workq
+#PBS -N astrid
+
+cd $PBS_O_WORKDIR
+export JOBS_PER_NODE=16
+
+parallel --progress \
+         --joblog logfile.$PBS_JOBID \
+         -j $JOBS_PER_NODE \
+         --slf $PBS_NODEFILE \
+         --workdir $PBS_O_WORKDIR \
+         ~/jobscripts/wq_astrid_boot.sh :::: bootstrap.list
+
+# contents of wq_astrid_boot.sh
+
+#!/bin/bash
+
+FILE=$1
+DIR=`dirname ${FILE}`
+
+# change directory
+cd $DIR
+
+# run astrid
+unbuffer ASTRID-linux -i $FILE -o ${FILE}.astrid.tre -m bionj > ${FILE}.astrid.out
+
+
+# astral job script
+
+#PBS -A hpc_allbirds01
+#PBS -l nodes=7:ppn=16
+#PBS -l walltime=5:00:00
+#PBS -q workq
+#PBS -N astral
+
+cd $PBS_O_WORKDIR
+export JOBS_PER_NODE=16
+
+parallel --progress \
+         --joblog logfile.$PBS_JOBID \
+         -j $JOBS_PER_NODE \
+         --slf $PBS_NODEFILE \
+         --workdir $PBS_O_WORKDIR \
+         ~/jobscripts/wq_astral_boot.sh :::: bootstrap.list
+
+# contents of wq_astral_boot.sh
+
+#!/bin/bash
+
+FILE=$1
+DIR=`dirname ${FILE}`
+
+# change directory
+cd $DIR
+
+# run astral against $FILE
+unbuffer java -Xmx1900M -jar /home/oliveros/Astral.5.5.9/astral.5.5.9.jar -i $FILE -o ${FILE}.astral.tre -t 0 > ${FILE}.astral.out
+
+
+# CONSEL
+#========
+
+# estimate ML tree using constraint corresponding to alternative topologies
+
+# apalharpactes sister to rest of asian trogons + NW trogons
+mpirun -np $procs -machinefile $PBS_NODEFILE examl-AVX -s $binary_phylip -g apal.constraint.tre -m GAMMA -n apal_T$i -p $RANDOM
+
+# ExaML_result.apal_T19
+
+# harpactes sister to apalharpactes + NW trogons
+mpirun -np $procs -machinefile $PBS_NODEFILE examl-AVX -s $binary_phylip -g harp.constraint.tre -m GAMMA -n harp_T$i -p $RANDOM
+
+# ExaML_result.harp_T10
+
+# combine ML trees in file MLtrees.tre
+# compute sitewise log likelihood scores using RAxML
+
+raxmlHPC-PTHREADS-AVX -f g -s trog90.phylip -m GTRGAMMA -z MLtrees.tre -n trog90 -T 16
+
+# create a symlink to RAxML output with an extension of "sitelh"
+
+ln -s RAxML_perSiteLLs.trog90 trog90.sitelh
+
+# generate multi-scale bootstrap replicates of log-likelihood score matrix, calculate the p-values, and print the output
+
+makermt --puzzle trog90; consel trog90; catpv trog90 > trog90.au_results.txt
+	
+# results
+
+# reading trog90.pv
+# rank item    obs     au     np |     bp     pp     kh     sh    wkh    wsh |
+#    1    1  -65.9  0.800  0.800 |  0.794  1.000  0.801  0.912  0.801  0.907 |
+#    2    2   65.9  0.200  0.200 |  0.206  2e-29  0.199  0.301  0.199  0.312 |
+#    3    3  300.2  1e-10  1e-07 |      0 4e-131      0      0      0      0 |
+
+
+# This script calculates the differences between sitewise log likelihoods calculated
+# (using RAxML) from a set of ML trees.  The first tree is assumed to be the ML tree
+# with no constraints, and the other trees inferred with constraints.  Pair-wise
+# comparisons are made between the first tree and the other trees.  Sitewise differences,
+# as well as differences summarized by gene are written to two output files.
+
+# specify file names
+charset_fname = 'trog90.charsets' # file containing charsets block
+site_like_fname = 'RAxML_perSiteLLs.trog90'  # output file from RAxML
+SL_fname = 'trog90.site.comparisons.csv'   # sitewise likelihood differences file
+GL_fname = 'trog90.locus.comparisons.csv'  # gene likelihood differences file
+
+class charset:
+    def __init__(self, label, range):
+        self.name = label.strip("'")
+        indexes = range.strip(";").split("-")
+        self.start = int(indexes[0])
+        self.end = int(indexes[1])
+        self.diff = []
+
+# read charsets
+charset_list = []
+charset_file = open(charset_fname, 'r')
+print('Reading {}...'.format(charset_fname))
+for line in charset_file:
+	split_line = line.split()
+	if len(split_line) > 0:
+		if split_line[0] == 'charset':
+			ch = charset(split_line[1], split_line[3])
+			charset_list.append(ch)
+
+# read site-likelihood scores
+line_num = 1
+site_like_scores = []
+site_like_file = open(site_like_fname, 'r')
+print('Reading {}...'.format(site_like_fname))
+for line in site_like_file:
+	split_line = line.split()
+	if line_num == 1:
+		# retrieve number of trees and sites from first line
+		numtrees = int(split_line[0])
+		numsites = int(split_line[1])
+		line_num = line_num + 1
+	else:
+		# check number of likelihood scores is correct
+		if len(split_line) == numsites + 1:
+			site_like_scores.append(split_line)
+		else:
+			raise Exception('Error reading line {} of the site-likelihood file'.format(line_num))
+
+# check number of sets of likelihood scores is correct
+if len(site_like_scores) <> numtrees:
+	raise Exception('Missing site-likelihood scores')
+
+# open output files
+# sitewise likelihood diff file will contain values in rows per comparison
+# gene likelihood diff file will contain values in columns per comparison
+sl_file = open(SL_fname, 'w')
+gl_file = open(GL_fname, 'w')
+# write column header on gene likelihood diff file
+gl_file.write('locus')
+
+# calculate sitewise likelihood differences
+for i in range(2, numtrees + 1):
+	print('Comparing {} with {}...'.format(site_like_scores[0][0], site_like_scores[i-1][0]))
+	# write row label on sitewise likelihood diff file
+	sl_file.write('{}VS{}  '.format(site_like_scores[0][0], site_like_scores[i-1][0]))
+	# write column header on gene likelihood diff file
+	gl_file.write(',{}VS{}'.format(site_like_scores[0][0], site_like_scores[i-1][0]))
+	SL_differences = []
+	for ch in charset_list:
+		locus_diff = 0
+		for site in range(ch.start, ch.end + 1):
+			site_diff =  float(site_like_scores[0][site]) - float(site_like_scores[i-1][site])
+			SL_differences.append(str(site_diff))
+			locus_diff = site_diff + locus_diff
+		ch.diff.append(str(locus_diff))
+	sl_file.write(' '.join(SL_differences) + '\n')
+sl_file.close()
+gl_file.write('\n')
+for ch in charset_list:
+	gl_file.write('{},{}\n'.format(ch.name, ','.join(ch.diff)))
+gl_file.close()
+print('Differences in log-likelihoods written to {} and {}.'.format(SL_fname, GL_fname))
+
+# sum rows
+head -3 RAxML_perSiteLLs.set1a | tail -1 | awk '{$1=""; sub("  ", " "); print}' | awk '{c=0;for(i=1;i<=NF;++i){c+=$i};printf "%.6f\n", c}'
+
+# Plot sitewise likelihood differences in R
+
+library(ggplot2)
+d = read.csv("trog90.locus.comparisons.csv")
+# if inserting number is required
+# d$ID <- seq.int(nrow(d))
+ggplot(d, aes(x=tr1VStr2, y=tr1VStr3)) + geom_point(alpha=0.25, color="red") + labs(x=expression(paste("tr1-tr2 ",Delta, "lnL")),y=expression(paste("tr1-tr3 ",Delta, "lnL")))
+ggplot(d, aes(x=tr1VStr2, y=tr1VStr3, color=ifelse(((abs(tr1VStr2)>15 | abs(tr1VStr3)>10)),"green", "blue"))) + geom_point(alpha=0.25) + labs(x=expression(paste("tr1-tr2 ",Delta, "lnL")),y=expression(paste("tr1-tr3 ",Delta, "lnL"))) + scale_color_manual(guide=FALSE, values=c("blue", "red"))
+
+
+# Outlier detection
+outlier_values <- boxplot.stats(d$tr1VStr2)$out
+boxplot(d$tr1VStr2, main="Tr2", boxwex=0.1)
+summary(d)
+boxplot(d[,2], col = rgb(0,0,1,0.5), main = "Boxplot of tr2")
+shapiro.test(d[,2])
+qqnorm(d[,2], main = "Normal QQ Plot - tr2")
+qqline(d[,2], col = "red")
+hist(d[,2], breaks = 20, col = rgb(0,0,1,0.5))
+chisq.out.test(d[,2],variance = var(d[,2]),opposite = TRUE)
+chisq.out.test(d[,2],variance = var(d[,2]),opposite = FALSE)
+
+
+
+                            t1vt2       t1vt3
+                            =========   ==========
+total delta lnl             65.874964	300.211645
+total delta lnl of outliers 35.089409	89.024371
+delta lnl w/o outliers      30.785555	211.187274
+
+
+#####  Infer ML gene trees
+
+# PBS script for parallel processing
+
+#PBS -A hpc_allbirds02
+#PBS -l nodes=10:ppn=16
+#PBS -l walltime=5:00:00
+#PBS -q workq
+#PBS -N raxbest
+
+cd $PBS_O_WORKDIR
+export JOBS_PER_NODE=16
+
+parallel --progress \
+         --joblog logfile.$PBS_JOBID \
+         -j $JOBS_PER_NODE \
+         --slf $PBS_NODEFILE \
+         --workdir $PBS_O_WORKDIR \
+         --colsep ' ' \
+         ~/jobscripts/wq_raxml_best.sh :::: phylip.files
+
+# shell script
+
+#!/bin/bash
+
+FILE=$1
+DIR=`dirname ${FILE}`
+BASE=`basename ${FILE}`
+LOCUS="${BASE%.*}"
+
+# get a random number for seed value
+RANDOM=`python -c "import random; print random.randrange(0,1000000)"`
+
+# create a directory for the output
+GENETREES=genetree/${LOCUS}
+mkdir -p $GENETREES
+
+# change that directory
+cd $GENETREES
+
+# run raxml against $FILE
+# raxmlHPC-AVX -m GTRGAMMA -N 20 -p $RANDOM -n best -s $FILE -o otus_elegans_10975
+raxmlHPC-AVX -m GTRGAMMA -N 20 -p $RANDOM -n best -s $FILE
+
+# remove unnecessary temp files
+rm -f RAxML_parsimonyTree.*.RUN.*
+rm -f RAxML_result.*.RUN.*
+rm -f RAxML_log.*.RUN.*
+
+
+# results
+
+gene trees written 3516
+num genes 3581
+
+# all exitvalues zero, 65 raxml runs did not start raxml
+# find empty directories in genetree
+
+find genetree -empty | sed 's@genetree@/scratch/oliveros/trogonidae/trog90_phylip@' | awk '{ print $0 ".phylip-relaxed"; }' > phylip.files1
+
+# gene trees saved in trog90.ML.genetrees.tre
+
+# run astral on ML gene trees
+
+#PBS -A hpc_allbirds02
+#PBS -l nodes=1:ppn=1
+#PBS -l walltime=03:00:00
+#PBS -q single
+#PBS -N astral
+
+FILE=/scratch/oliveros/trogonidae/trog90.ML.genetrees.tre
+DIR=`dirname ${FILE}`
+
+# change directory
+cd $DIR
+
+# run astral against $FILE
+unbuffer java -Xmx1900M -jar /home/oliveros/Astral.5.5.9/astral.5.5.9.jar -i $FILE -o ${FILE}.astral.tre -t 0 > ${FILE}.astral.out
+
+# run astrid on ML gene trees
+
+#PBS -A hpc_allbirds02
+#PBS -l nodes=1:ppn=1
+#PBS -l walltime=01:00:00
+#PBS -q single
+#PBS -N astrid
+
+FILE=/scratch/oliveros/trogonidae/trog90.ML.genetrees.tre
+DIR=`dirname ${FILE}`
+
+# change directory
+cd $DIR
+
+# run astrid
+unbuffer ASTRID-linux -i $FILE -o ${FILE}.astrid.tre -m bionj > ${FILE}.astrid.out
+
+
+##
+# save best trees in nexus tree file with names of uce loci
+
+for i in uce-*; do echo tree $i = `cat $i/RAxML_bestTree.best` >> trog90.ML.genetrees.tre; done
+
+#NEXUS
+begin trees;
+
+Summarizing average support ...
+Results:
+0
+['apaloderma aequatoriale 8461', 'apaloderma vittatum', 'harpactes ardens 26958', 'harpactes erythrocephalus 9970', 'harpactes oreskios 23185', 'apalharpactes mackloti b49104', 'euptilotis neoxenus prs2606', 'pharomachrus antisianus b22870', 'priotelus roseigaster 6363', 'priotelus temnurus 5565', 'trogon personatus gfb2125', 'trogon violaceus rop258']
+('gene tree proportion: ', 0.43004747277296845)
+('average bootstrap support: ', 0.9076823021744319)
+1
+['apaloderma aequatoriale 8461', 'apaloderma vittatum']
+('gene tree proportion: ', 0.9056129572745043)
+('average bootstrap support: ', 0.9153472994660814)
+2
+['harpactes ardens 26958', 'harpactes erythrocephalus 9970', 'harpactes oreskios 23185']
+('gene tree proportion: ', 0.6559620217816252)
+('average bootstrap support: ', 0.7470951848435906)
+3
+['euptilotis neoxenus prs2606', 'pharomachrus antisianus b22870', 'priotelus roseigaster 6363', 'priotelus temnurus 5565', 'trogon personatus gfb2125', 'trogon violaceus rop258']
+('gene tree proportion: ', 0.13152750628316112)
+('average bootstrap support: ', 0.49720613044299233)
+4
+['harpactes ardens 26958', 'harpactes erythrocephalus 9970', 'harpactes oreskios 23185', 'apalharpactes mackloti b49104']
+('gene tree proportion: ', 0.12901424183189053)
+('average bootstrap support: ', 0.45394125914735023)
+5
+['harpactes ardens 26958', 'harpactes erythrocephalus 9970', 'harpactes oreskios 23185', 'euptilotis neoxenus prs2606', 'pharomachrus antisianus b22870', 'priotelus roseigaster 6363', 'priotelus temnurus 5565', 'trogon personatus gfb2125', 'trogon violaceus rop258']
+('gene tree proportion: ', 0.04132923764311645)
+('average bootstrap support: ', 0.36474357145570896)
+6
+['apalharpactes mackloti b49104', 'euptilotis neoxenus prs2606', 'pharomachrus antisianus b22870', 'priotelus roseigaster 6363', 'priotelus temnurus 5565', 'trogon personatus gfb2125', 'trogon violaceus rop258']
+('gene tree proportion: ', 0.03825746998045239)
+('average bootstrap support: ', 0.3869172918114051)
+
+
+
+Summarizing average support ...
+Results:
+0
+['apaloderma aequatoriale 8461', 'apaloderma vittatum']
+('gene tree proportion: ', 0.9056129572745043)
+('average bootstrap support: ', 0.9153472994660815)
+1
+['harpactes ardens 26958', 'harpactes erythrocephalus 9970', 'harpactes oreskios 23185']
+('gene tree proportion: ', 0.6559620217816252)
+('average bootstrap support: ', 0.7470951848435913)
+2
+['euptilotis neoxenus prs2606', 'pharomachrus antisianus b22870', 'priotelus roseigaster 6363', 'priotelus temnurus 5565', 'trogon personatus gfb2125', 'trogon violaceus rop258']
+('gene tree proportion: ', 0.2736665735827981)
+('average bootstrap support: ', 0.5055801394185061)
+3
+['harpactes ardens 26958', 'harpactes erythrocephalus 9970', 'harpactes oreskios 23185', 'apalharpactes mackloti b49104']
+('gene tree proportion: ', 0.12901424183189053)
+('average bootstrap support: ', 0.4539412591473502)
+4
+['harpactes ardens 26958', 'harpactes erythrocephalus 9970', 'harpactes oreskios 23185', 'euptilotis neoxenus prs2606', 'pharomachrus antisianus b22870', 'priotelus roseigaster 6363', 'priotelus temnurus 5565', 'trogon personatus gfb2125', 'trogon violaceus rop258']
+('gene tree proportion: ', 0.09578330075397934)
+('average bootstrap support: ', 0.40228771274602837)
+5
+['apalharpactes mackloti b49104', 'euptilotis neoxenus prs2606', 'pharomachrus antisianus b22870', 'priotelus roseigaster 6363', 'priotelus temnurus 5565', 'trogon personatus gfb2125', 'trogon violaceus rop258']
+('gene tree proportion: ', 0.08600949455459368)
+('average bootstrap support: ', 0.39274044142735665)
